@@ -7,162 +7,215 @@
     <style>
         /* --- RESET & BASE --- */
         :root {
-            --bg-color: #080808;
+            --bg-color: #030303;
             --text-main: #e0e0e0;
-            --accent-cold: #00f2ff; /* Bleu cyan très froid */
-            --accent-alert: #ff2a6d; /* Rose rouge */
+            --neon-blue: #00f3ff;
+            --neon-pink: #bc13fe;
             --font-display: 'Montserrat', sans-serif;
             --font-mono: 'Space Mono', monospace;
         }
 
         html {
-            height: 100%;
+            width: 100%;
+            overflow-x: hidden; /* Solution radicale au scroll horizontal */
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
             font-family: var(--font-mono);
-            min-height: 100%; /* Permet à la page de grandir */
+            min-height: 100vh;
+            width: 100%;
             margin: 0;
-            overflow-x: hidden; /* Empêche juste le scroll horizontal */
+            padding: 0;
+            overflow-x: hidden; /* Double sécurité */
+            display: flex;
+            flex-direction: column;
             position: relative;
         }
 
-        /* --- BACKGROUND (FIXE) --- */
-        /* Ces éléments restent en fond et ne bougent pas */
-        .noise {
+        /* --- ARRIÈRE-PLAN ANIMÉ (FIXE) --- */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(rgba(188, 19, 254, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) scale(2);
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .vignette {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            background: radial-gradient(circle, transparent 40%, #000000 100%);
             z-index: 1; pointer-events: none;
         }
-        
-        .grid-bg {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 0; pointer-events: none;
-        }
 
-        /* --- OVERLAY DE DÉPART --- */
+        /* --- ECRAN D'ACCUEIL (OVERLAY) --- */
         #start-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 100;
-            display: flex; align-items: center; justify-content: center;
-            flex-direction: column;
-            transition: opacity 0.8s ease-out;
+            background: #000;
+            z-index: 999;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: opacity 0.8s ease;
         }
-        #start-btn {
-            padding: 15px 30px;
-            background: transparent;
-            border: 1px solid var(--text-main);
-            color: var(--text-main);
-            font-family: var(--font-mono);
-            font-size: 1rem; text-transform: uppercase; letter-spacing: 2px;
-            cursor: pointer; transition: 0.3s;
-        }
-        #start-btn:hover { background: var(--text-main); color: #000; }
 
-        /* --- CONTAINER PRINCIPAL --- */
+        #start-btn {
+            background: transparent;
+            color: var(--neon-blue);
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            border: 2px solid var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--neon-blue);
+            transition: 0.3s;
+        }
+        #start-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 40px var(--neon-blue); }
+
+        /* --- CONTENU PRINCIPAL --- */
         .container {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 700px;
-            /* Centrage horizontal manuel + Marges verticales flexibles */
-            margin: 0 auto; 
-            padding: 10vh 20px 10vh 20px; 
-            
+            max-width: 650px; /* Largeur lecture idéale */
+            margin: 0 auto;   /* Centrage horizontal */
+            padding: 80px 20px 100px 20px; /* Marges intérieures */
             text-align: center;
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+            transform: translateY(30px);
+            transition: opacity 1.5s ease, transform 1.5s ease;
         }
 
         .container.visible { opacity: 1; transform: translateY(0); }
 
-        /* --- TYPO --- */
+        /* --- TYPO GLITCH --- */
         h1 {
             font-family: var(--font-display);
-            font-size: clamp(3rem, 10vw, 7rem);
-            font-weight: 800; text-transform: uppercase;
+            font-size: clamp(3rem, 12vw, 6rem);
+            font-weight: 900;
+            text-transform: uppercase;
             line-height: 0.9;
+            color: #fff;
+            position: relative;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px var(--neon-pink);
+        }
+
+        /* Effet Glitch CSS */
+        h1::before, h1::after {
+            content: "BONNE ANNÉE";
+            position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0.8;
+        }
+        h1::before {
+            color: var(--neon-blue); z-index: -1;
+            animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
+        }
+        h1::after {
+            color: var(--neon-pink); z-index: -2;
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        .year {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 700;
             color: transparent;
-            -webkit-text-stroke: 1px rgba(255,255,255,0.8);
-            margin-bottom: 0.5rem;
-        }
-
-        .year-display {
-            font-size: clamp(2rem, 5vw, 4rem);
-            font-weight: bold; color: var(--accent-cold);
+            -webkit-text-stroke: 1px var(--neon-blue);
             display: block; margin-bottom: 3rem;
-            text-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
         }
 
-        /* --- LE PITCH (Satire Corporate) --- */
-        .pitch {
-            font-size: 1.1rem; line-height: 1.8;
-            color: #bbb;
+        /* --- TEXTE / PITCH --- */
+        .pitch-box {
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid #333;
+            border-left: 4px solid var(--neon-pink);
+            padding: 2rem;
             text-align: left;
-            border-left: 2px solid var(--accent-cold);
-            padding-left: 1.5rem;
-            margin: 0 auto;
-            background: rgba(0,0,0,0.3); /* Légère teinte pour lisibilité */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .pitch p { margin-bottom: 1.5rem; }
-        .highlight { color: #fff; border-bottom: 1px dotted var(--accent-cold); }
-        .italic { font-style: italic; opacity: 0.7; }
+        .pitch-box p {
+            font-size: 1rem; line-height: 1.7; color: #ccc; margin-bottom: 1.5rem;
+        }
+        .pitch-box p:last-child { margin-bottom: 0; }
+
+        .highlight { color: var(--neon-blue); font-weight: bold; }
+        .strike { text-decoration: line-through; color: #666; }
 
         /* --- SIGNATURE --- */
         .signature {
             margin-top: 4rem;
-            font-size: 0.8rem; letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--accent-alert);
             display: inline-block;
-            border: 1px solid var(--accent-alert);
-            padding: 10px 20px;
-            margin-bottom: 50px; /* Marge de sécurité en bas */
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            color: var(--neon-pink);
+            text-transform: uppercase;
+            border-bottom: 1px dashed var(--neon-pink);
+            padding-bottom: 5px;
         }
 
-        /* --- ANIMATIONS LÉGÈRES --- */
-        @keyframes float { 0% {transform: translateY(0);} 50% {transform: translateY(-5px);} 100% {transform: translateY(0);} }
-        .year-display { animation: float 6s ease-in-out infinite; }
+        /* --- ANIMATIONS KEYFRAMES --- */
+        @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }
+        
+        @keyframes glitch-anim-1 {
+            0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px,0); }
+            20% { clip-path: inset(60% 0 10% 0); transform: translate(2px,0); }
+            40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px,0); }
+            60% { clip-path: inset(80% 0 5% 0); transform: translate(2px,0); }
+            80% { clip-path: inset(10% 0 60% 0); transform: translate(-2px,0); }
+            100% { clip-path: inset(30% 0 30% 0); transform: translate(2px,0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(10% 0 60% 0); transform: translate(2px,0); }
+            20% { clip-path: inset(80% 0 5% 0); transform: translate(-2px,0); }
+            40% { clip-path: inset(30% 0 20% 0); transform: translate(2px,0); }
+            60% { clip-path: inset(10% 0 80% 0); transform: translate(-2px,0); }
+            80% { clip-path: inset(50% 0 30% 0); transform: translate(2px,0); }
+            100% { clip-path: inset(20% 0 70% 0); transform: translate(-2px,0); }
+        }
+
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <audio id="techno-track" loop preload="auto">
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_223408933b.mp3?filename=dark-techno-city-16392.mp3" type="audio/mpeg">
+    <audio id="cyber-audio" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=cyberpunk-2099-15883.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="noise"></div>
-    <div class="grid-bg"></div>
+    <div class="bg-grid"></div>
+    <div class="vignette"></div>
 
     <div id="start-overlay">
-        <button id="start-btn">Lancer la simulation</button>
-        <p style="margin-top: 15px; color: #555; font-size: 0.7rem;">[ Audio Requis ]</p>
+        <button id="start-btn">INITIALISER LE SYSTÈME</button>
+        <p style="margin-top: 15px; color: #666; font-size: 0.8rem;">[ Son Requis ]</p>
     </div>
 
     <div class="container" id="main-content">
         <h1>Bonne<br>Année</h1>
-        <span class="year-display">2026</span>
+        <span class="year">2026</span>
 
-        <div class="pitch">
+        <div class="pitch-box">
             <p>
-                Le bilan opérationnel de l'année précédente est formel : nous sommes toujours là. C'est soit un miracle, soit une erreur administrative.
+                Connexion établie. Mise à jour "Espoir_V2.0" en échec. Redémarrage en mode sans échec...
             </p>
             <p>
-                Pour 2026, je te souhaite une <span class="highlight">résilience disruptive</span> face à l'effondrement ambiant. Je te souhaite d'atteindre tes objectifs avant que l'IA ne décide qu'ils soient obsolètes, et de trouver un sens à la vie entre deux réunions Teams qui auraient pu être un mail.
+                Pour 2026, je te souhaite de naviguer dans le métavers de l'incompétence généralisée avec grâce. Puisses-tu trouver de la <span class="highlight">Stabilité Mentale™</span> dans un monde où ton grille-pain a besoin d'une mise à jour Wi-Fi pour fonctionner.
             </p>
             <p>
-                Mes résolutions ? Arrêter de faire semblant d'écouter les gens qui parlent de politiques et de pompes à chaleur,  et continuer à juger les spectateurs de TPMP.
+                Je te souhaite aussi de réussir ta transition écologique en triant tes emails, pendant que 4 milliardaires polluent plus que ton arbre généalogique entier depuis le Moyen-Âge.
             </p>
-            <p class="italic">
-                Allez, courage. Plus que 12 mois avant de recommencer ce cirque.
+            <p class="strike">
+                Cordialement.
+            </p>
+            <p style="color: var(--neon-pink); font-style: italic;">
+                Fin de transmission.
             </p>
         </div>
 
@@ -176,38 +229,38 @@
         const startBtn = document.getElementById('start-btn');
         const overlay = document.getElementById('start-overlay');
         const mainContent = document.getElementById('main-content');
-        const audio = document.getElementById('techno-track');
+        const audio = document.getElementById('cyber-audio');
 
         startBtn.addEventListener('click', () => {
-            // Animation de sortie de l'overlay
+            // 1. Disparition overlay
             overlay.style.opacity = '0';
             setTimeout(() => { overlay.style.display = 'none'; }, 800);
 
-            // Lancement Audio
-            audio.volume = 0.5;
-            audio.play().catch(e => console.log("Audio prevented"));
+            // 2. Musique (Volume ajusté)
+            audio.volume = 0.6;
+            audio.play().catch(e => console.log("Erreur lecture audio:", e));
 
-            // Affichage contenu
+            // 3. Apparition contenu
             mainContent.classList.add('visible');
 
-            // Confettis froids (Blanc et Bleu Ciel)
-            var duration = 2 * 1000;
-            var end = Date.now() + duration;
+            // 4. Confettis Cyberpunk (Neon)
+            const duration = 2000;
+            const end = Date.now() + duration;
 
             (function frame() {
                 confetti({
-                    particleCount: 3,
+                    particleCount: 4,
                     angle: 60,
                     spread: 55,
                     origin: { x: 0 },
-                    colors: ['#00f2ff', '#ffffff'] // Couleurs froides
+                    colors: ['#00f3ff', '#bc13fe', '#ffffff']
                 });
                 confetti({
-                    particleCount: 3,
+                    particleCount: 4,
                     angle: 120,
                     spread: 55,
                     origin: { x: 1 },
-                    colors: ['#00f2ff', '#ffffff']
+                    colors: ['#00f3ff', '#bc13fe', '#ffffff']
                 });
 
                 if (Date.now() < end) {
