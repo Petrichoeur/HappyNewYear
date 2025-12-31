@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonne Année ! | Florian Bobo</title>
+    <style>
+        /* --- RESET & BASE --- */
+        :root {
+            --bg-color: #050505;
+            --text-main: #e0e0e0;
+            --accent: #d4af37; /* Or Champagne */
+            --accent-glow: rgba(212, 175, 55, 0.4);
+            --font-display: 'Montserrat', sans-serif;
+            --font-body: 'Courier New', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-display);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Empêche le scroll pour l'effet immersif */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        /* --- BACKGROUND ANIMÉ --- */
+        .bg-gradient {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 70%);
+            z-index: -1;
+            animation: pulse 10s infinite alternate;
+        }
+
+        /* --- CONTAINER PRINCIPAL --- */
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+            z-index: 10;
+            opacity: 0; /* Caché au départ pour l'anim */
+            transform: translateY(30px);
+            transition: all 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- TYPOGRAPHIE --- */
+        h1 {
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #777 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+            text-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .year {
+            font-size: clamp(4rem, 15vw, 10rem);
+            color: transparent;
+            -webkit-text-stroke: 2px var(--accent);
+            position: relative;
+            display: block;
+            margin-top: -20px;
+            opacity: 0.8;
+        }
+        
+        .year::after {
+            content: '2026';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            color: var(--accent);
+            opacity: 0;
+            filter: blur(10px);
+            animation: glow 3s infinite alternate;
+        }
+
+        /* --- LE PITCH SATIRIQUE --- */
+        .pitch {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #888;
+            margin: 2rem auto;
+            max-width: 600px;
+            border-left: 2px solid var(--accent);
+            padding-left: 1.5rem;
+            text-align: left;
+        }
+
+        .highlight {
+            color: var(--text-main);
+            font-weight: bold;
+            border-bottom: 1px dashed var(--accent);
+        }
+
+        /* --- SIGNATURE --- */
+        .signature {
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .signature::before, .signature::after {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 1px;
+            background-color: var(--accent);
+        }
+
+        /* --- BOUTON INTERACTIF --- */
+        .cta-btn {
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: 0.3s;
+            font-family: var(--font-display);
+            font-weight: 600;
+        }
+
+        .cta-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* --- ANIMATIONS KEYFRAMES --- */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        @keyframes glow {
+            0% { opacity: 0; filter: blur(20px); }
+            50% { opacity: 0.4; filter: blur(5px); }
+            100% { opacity: 0; filter: blur(20px); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .pitch { text-align: center; border-left: none; border-top: 2px solid var(--accent); padding-top: 1rem; padding-left: 0; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="bg-gradient"></div>
+
+    <div class="container" id="main-content">
+        <h1>Bonne Année</h1>
+        <span class="year">2026</span>
+
+        <div class="pitch">
+            <p>
+                Félicitations. Tu as survécu à une autre année de chaos géopolitique, d'inflation absurde et de réunions qui auraient pu être des emails.
+                <br><br>
+                Pour cette nouvelle cuvée, je te souhaite <span class="highlight">moins d'intelligence artificielle</span> et plus d'intelligence émotionnelle (même si les deux sont en voie de disparition). 
+                Mes résolutions ? Continuer de juger silencieusement les gens qui mettent de l'ananas sur la pizza.
+                <br><br>
+                Allez, on remet ça ?
+            </p>
+        </div>
+
+        <div class="signature">
+            Florian Bobo
+        </div>
+
+        <button class="cta-btn" onclick="celebrate()">Lancer les confettis (virtuels)</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        // Animation d'apparition au chargement
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('main-content').classList.add('visible');
+            }, 300);
+        });
+
+        // Fonction pour le bouton (Effet confetti)
+        function celebrate() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInOut(min, max) {
+            return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+            var timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            var particleCount = 50 * (timeLeft / duration);
+            // since particles fall down, start a bit higher than random
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.1, 0.3), y: Math.random() - 0.2 } }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+
+            // Petit changement de texte sur le bouton
+            const btn = document.querySelector('.cta-btn');
+            btn.innerText = "C'est parti ! 🥂";
+            btn.style.pointerEvents = "none";
+        }
+    </script>
+</body>
+</html>
