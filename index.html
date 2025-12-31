@@ -15,23 +15,22 @@
             --font-mono: 'Space Mono', monospace;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html {
+            height: 100%;
+        }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
             font-family: var(--font-mono);
-            min-height: 100vh;
-            width: 100vw;
-            overflow-x: hidden;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            min-height: 100%; /* Permet à la page de grandir */
+            margin: 0;
+            overflow-x: hidden; /* Empêche juste le scroll horizontal */
+            position: relative;
         }
 
         /* --- BACKGROUND (FIXE) --- */
+        /* Ces éléments restent en fond et ne bougent pas */
         .noise {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
@@ -67,14 +66,18 @@
 
         /* --- CONTAINER PRINCIPAL --- */
         .container {
-            text-align: center;
-            padding: 4rem 2rem;
-            max-width: 750px;
+            position: relative;
             z-index: 10;
+            width: 100%;
+            max-width: 700px;
+            /* Centrage horizontal manuel + Marges verticales flexibles */
+            margin: 0 auto; 
+            padding: 10vh 20px 10vh 20px; 
+            
+            text-align: center;
             opacity: 0;
             transform: translateY(20px);
             transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
-            margin: 5vh 0;
         }
 
         .container.visible { opacity: 1; transform: translateY(0); }
@@ -99,12 +102,13 @@
 
         /* --- LE PITCH (Satire Corporate) --- */
         .pitch {
-            font-size: 1rem; line-height: 1.8;
+            font-size: 1.1rem; line-height: 1.8;
             color: #bbb;
             text-align: left;
             border-left: 2px solid var(--accent-cold);
             padding-left: 1.5rem;
             margin: 0 auto;
+            background: rgba(0,0,0,0.3); /* Légère teinte pour lisibilité */
         }
 
         .pitch p { margin-bottom: 1.5rem; }
@@ -120,6 +124,7 @@
             display: inline-block;
             border: 1px solid var(--accent-alert);
             padding: 10px 20px;
+            margin-bottom: 50px; /* Marge de sécurité en bas */
         }
 
         /* --- ANIMATIONS LÉGÈRES --- */
@@ -132,4 +137,84 @@
 
     <audio id="techno-track" loop preload="auto">
         <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_223408933b.mp3?filename=dark-techno-city-16392.mp3" type="audio/mpeg">
-        
+    </audio>
+
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+
+    <div id="start-overlay">
+        <button id="start-btn">Lancer la simulation</button>
+        <p style="margin-top: 15px; color: #555; font-size: 0.7rem;">[ Audio Requis ]</p>
+    </div>
+
+    <div class="container" id="main-content">
+        <h1>Bonne<br>Année</h1>
+        <span class="year-display">2026</span>
+
+        <div class="pitch">
+            <p>
+                Le bilan opérationnel de l'année précédente est formel : nous sommes toujours là. C'est soit un miracle, soit une erreur administrative.
+            </p>
+            <p>
+                Pour 2026, je te souhaite une <span class="highlight">résilience disruptive</span> face à l'effondrement ambiant. Je te souhaite d'atteindre tes objectifs avant que l'IA ne décide qu'ils sont obsolètes, et de trouver un sens à la vie entre deux réunions Teams qui auraient pu être un email.
+            </p>
+            <p>
+                Mes résolutions ? Arrêter de faire semblant d'écouter les gens qui parlent de cryptomonnaies et continuer à juger le monde avec un détachement hautain mais élégant.
+            </p>
+            <p class="italic">
+                Allez, courage. Plus que 12 mois avant de recommencer ce cirque.
+            </p>
+        </div>
+
+        <div class="signature">
+            Florian Bobo
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const overlay = document.getElementById('start-overlay');
+        const mainContent = document.getElementById('main-content');
+        const audio = document.getElementById('techno-track');
+
+        startBtn.addEventListener('click', () => {
+            // Animation de sortie de l'overlay
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 800);
+
+            // Lancement Audio
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log("Audio prevented"));
+
+            // Affichage contenu
+            mainContent.classList.add('visible');
+
+            // Confettis froids (Blanc et Bleu Ciel)
+            var duration = 2 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#00f2ff', '#ffffff'] // Couleurs froides
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#00f2ff', '#ffffff']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        });
+    </script>
+</body>
+</html>
